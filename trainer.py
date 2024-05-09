@@ -8,6 +8,7 @@ import os
 from model import Model
 from torch.utils.data import DataLoader
 import numpy as np
+import matplotlib.pyplot as plt
 
 """
 
@@ -61,8 +62,11 @@ class Trainer:
 
     # Test iteration for model
     def test(self, dataloader: DataLoader) -> None:
-        for _, (x, y) in enumerate(dataloader):
-            self.__model.evaluate(x, y, self.__loss_func)
+        for _, (x, _) in enumerate(dataloader):
+            predictedNumber = self.__model.test(x)
+            plt.title(predictedNumber)
+            plt.imshow(x.squeeze(), cmap='gray')
+            plt.show()
 
     def __loadOptimizer(self, path: str) -> None:
         path = os.path.join(path, OPTIMIZER_FILE_NAME)

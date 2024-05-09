@@ -18,8 +18,8 @@ Constants
 
 """
 BATCH_SIZE = 64
-LEARNING_RATE = 0.003
-TRANSFORM = transforms.ToTensor()
+LEARNING_RATE = 0.01
+TRANSFORM = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,)),])
 
 """
 

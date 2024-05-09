@@ -4,12 +4,11 @@ Imports
 
 """
 import torch
-from torchvision.io import read_image, ImageReadMode
+from torchvision import transforms, io
 import os
 from torch.utils.data import Dataset
 import numpy as np
 import pandas as pd
-import torch.nn.functional as nnf
 
 import matplotlib.pyplot as plt
 
@@ -20,6 +19,7 @@ Constants
 """
 IMG_DIR = "image"
 CSV_DIR = "csv"
+RESIZE_TRANSFORM = transforms.Resize(28)
 
 """
 
@@ -43,9 +43,9 @@ class MyDataset(Dataset):
         image = np.delete(image, 0)
         image = np.reshape(image, (28,28))
 
-        plt.title(label)
-        plt.imshow(image.squeeze(), cmap='gray')
-        plt.show()
+        # plt.title(label)
+        # plt.imshow(image.squeeze(), cmap='gray')
+        # plt.show()
 
         if self.__transform:
             image = self.__transform(image)
@@ -72,8 +72,8 @@ class MyDataset(Dataset):
             os.mkdir(IMG_DIR)
 
         for img in os.listdir(IMG_DIR):
-            image = read_image(os.path.join(IMG_DIR,img), ImageReadMode.GRAY)
-            # image = nnf.interpolate(image, (28,28), mode='bicubic')
+            image = io.read_image(os.path.join(IMG_DIR,img), io.ImageReadMode.GRAY)
+            image = RESIZE_TRANSFORM(image)
             image = image/255
             image = torch.flatten(image)
             image = torch.reshape(image, (1, -1))
