@@ -10,8 +10,6 @@ from torch.utils.data import Dataset
 import numpy as np
 import pandas as pd
 
-import matplotlib.pyplot as plt
-
 """
 
 Constants
@@ -42,10 +40,6 @@ class MyDataset(Dataset):
         label = int(image[0])
         image = np.delete(image, 0)
         image = np.reshape(image, (28,28))
-
-        # plt.title(label)
-        # plt.imshow(image.squeeze(), cmap='gray')
-        # plt.show()
 
         if self.__transform:
             image = self.__transform(image)
