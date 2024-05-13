@@ -64,7 +64,7 @@ class Trainer:
     def test(self, dataloader: DataLoader) -> None:
         for _, (x, _) in enumerate(dataloader):
             predictedNumber = self.__model.test(x)
-            plt.title(predictedNumber)
+            plt.title(f"Prediction: {predictedNumber}")
             plt.imshow(x.squeeze(), cmap='gray')
             plt.show()
 

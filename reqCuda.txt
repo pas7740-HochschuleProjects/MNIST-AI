@@ -1,0 +1,8 @@
+pandas
+matplotlib
+-i https://download.pytorch.org/whl/cu121
+torch
+-i https://download.pytorch.org/whl/cu121
+torchvision
+-i https://download.pytorch.org/whl/cu121
+torchaudio
