@@ -7,12 +7,18 @@ import torch
 import os
 from torch import nn
 
+
+
+
 """
 
 Constants
 
 """
 MODEL_FILE_NAME = "model.pth"
+
+
+
 
 """
 
@@ -23,31 +29,38 @@ class Model(nn.Module):
     def __init__(self, device: str) -> None:
         super(Model, self).__init__()
         self.device = device
-        self.conv1 = nn.Sequential(         
-            nn.Conv2d(
-                in_channels=1,              
-                out_channels=16,            
-                kernel_size=5,              
-                stride=1,                   
-                padding=2,                  
-            ),                              
-            nn.ReLU(),                      
-            nn.MaxPool2d(kernel_size=2),    
+        # Get geometric structure
+        self.conv1 = nn.Conv2d(
+            in_channels=1,      
+            out_channels=16,
+            kernel_size=5
         )
-        self.conv2 = nn.Sequential(         
-            nn.Conv2d(16, 32, 5, 1, 2),     
-            nn.ReLU(),                      
-            nn.MaxPool2d(2),                
+        self.conv2 = nn.Conv2d(
+            in_channels=16,      
+            out_channels=32,
+            kernel_size=5
         )
-        self.out = nn.Linear(32 * 7 * 7, 10)
+        self.relu = nn.ReLU()
+        # Recognize corners and edges
+        self.max = nn.MaxPool2d(kernel_size=2)
+        self.flatten = nn.Flatten()
+        self.linear = nn.Linear(512, 10)
 
+
+    # Forward Propagation
     def forward(self, x):
         x = self.conv1(x)
+        x = self.relu(x)
+        x = self.max(x)
+        x = self.relu(x)
         x = self.conv2(x)
-        x = x.view(x.size(0), -1)       
-        output = self.out(x)
-        return output
+        x = self.relu(x)
+        x = self.max(x)
+        x = self.flatten(x)
+        x = self.linear(x)
+        return x
     
+
     def learn(self, image, label, optimizer, loss_func) -> float:
         # Send data to device
         image, label = image.to(self.device), label.to(self.device)
@@ -61,6 +74,7 @@ class Model(nn.Module):
         optimizer.step()
         return loss.item()
     
+
     def evaluate(self, image, label, loss_func) -> tuple:
         image, label = image.to(self.device), label.to(self.device)
         # Compute prediction and error
@@ -70,20 +84,24 @@ class Model(nn.Module):
         _, predictedNumber = torch.max(prediction.data, 1)
         return loss.item(), (predictedNumber == label).sum().item() / predictedNumber.size(0)
     
+
     def test(self, image) -> int:
         image = image.to(self.device)
         prediction = self(image)
         # Compute predicted number
         _, predictedNumber = torch.max(prediction.data, 1)
-        return predictedNumber.item()
-        
+        return predictedNumber.item()      
     
+
+    # Save model
     def save(self, path: str) -> None:
         if not os.path.exists(path):
             os.mkdir(path)
         path = os.path.join(path, MODEL_FILE_NAME)
         torch.save(self.state_dict(), path)
     
+    
+    # Load model
     def load(self, path: str) -> None:
         path = os.path.join(path, MODEL_FILE_NAME)
         if os.path.exists(path):

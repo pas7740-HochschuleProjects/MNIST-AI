@@ -12,14 +12,21 @@ from torchvision import datasets, transforms
 from torch.utils.data import DataLoader, Dataset
 from dataset import MyDataset
 
+
+
+
 """
 
 Constants
 
 """
-BATCH_SIZE = 64
+BATCH_SIZE = 128                     # Batch count per episode
 LEARNING_RATE = 0.01
-TRANSFORM = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,)),])
+                                                                        # Mean  #STD         # Standardabweichung
+TRANSFORM = transforms.Compose([transforms.ToTensor(), transforms.Normalize(0.5, 0.5)])      # image = (image - mean) / std
+
+
+
 
 """
 
@@ -31,12 +38,16 @@ epochs = 10
 
 """
 
+
+
+
 Functions
 
 """
 # Returns target processing unit
 def getProcessingUnit() -> str:
     return "cuda" if torch.cuda.is_available() else "cpu"
+
 
 # Returns MNIST-Dataset
 def getDataset(trained: bool) -> Dataset:
@@ -46,6 +57,7 @@ def getDataset(trained: bool) -> Dataset:
         download=True,
         transform=TRANSFORM
     )
+
 
 # Read arguments
 def readArguments() -> None:
@@ -59,6 +71,9 @@ def readArguments() -> None:
     args = parser.parse_args()
     shouldTrain = True if args.train == "train" else False
     epochs = args.epochs
+
+
+
 
 """
 
@@ -87,6 +102,7 @@ def main():
         test_dataloader = DataLoader(MyDataset("custom.csv", TRANSFORM))
         trainer.test(test_dataloader)
         print("Testing is done")
+
 
 if __name__ == "__main__":
     readArguments()

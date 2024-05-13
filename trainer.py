@@ -10,6 +10,9 @@ from torch.utils.data import DataLoader
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+
+
 """
 
 Constants
@@ -17,6 +20,9 @@ Constants
 """
 SAVE_PATH = "./model"
 OPTIMIZER_FILE_NAME = "optimizer.pth"
+
+
+
 
 """
 
@@ -32,6 +38,7 @@ class Trainer:
         # Load trained model and optimizer
         self.__model.load(SAVE_PATH)
         self.__loadOptimizer(SAVE_PATH)
+
 
     # Train itertation for model
     def train(self, epochs: int, train_dataloader: DataLoader, eval_dataloader: DataLoader) -> None:
@@ -60,6 +67,7 @@ class Trainer:
 
         print("\nTraining is done")
 
+
     # Test iteration for model
     def test(self, dataloader: DataLoader) -> None:
         for _, (x, _) in enumerate(dataloader):
@@ -68,12 +76,14 @@ class Trainer:
             plt.imshow(x.squeeze(), cmap='gray')
             plt.show()
 
+
     def __loadOptimizer(self, path: str) -> None:
         path = os.path.join(path, OPTIMIZER_FILE_NAME)
         if os.path.exists(path):
             self.__optimizer.load_state_dict(torch.load(path))
         else:
             print(f"There is no optimizer to load at {path}")
+
 
     def __saveOptimizer(self, path: str) -> None:
         if not os.path.exists(path):
